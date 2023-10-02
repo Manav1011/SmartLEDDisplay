@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=192, height=160, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+</head>
+<style>   
+ body {
+        font-size: 10px; /* Set a base font size for the root element */
+        font-family:monospace;
+        font-weight:lighter;        ;
+    } 
+     /* Style for the container div */
+     .container-updated {
+            width: 192px;
+            height: 160px;
+            overflow: hidden;
+            background-color: black;        
+            color:white;
+            margin: 0; /* Remove default margins for a clean fit */
+            padding: 0; /* Remove default padding */
+            overflow:hidden;
+            overflow: auto;
+        }
+
+        /* Style to zoom out the content */
+        .zoomed-out-content {
+            transform: scale(1); /* Adjust the scale value as needed */
+            transform-origin: top left;
+            /* height: 100%; */
+            border: 1px solid #ccc;
+            resize: both;
+        }
+
+        /* Add styles for the div's scrollbars (if needed) */
+        .container-updated::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .container-updated::-webkit-scrollbar-thumb {
+            background-color: #888;
+        }
+    p {
+        font-size: 1rem; /* 1rem is equivalent to the base font size (16px) */
+    }
+    
+    h1 {
+        font-size: 10px; /* 2rem is equivalent to twice the base font size (32px) */
+    }
+    .table-container{        
+        width: 100%;
+        height: 100%;
+    }
+</style>
+<body>
+    <div class="container-updated" id='main'>         
+        <div class="zoomed-out-content" id='zoomed-out'>
+        <table class="table-dark table-container table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>Label</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>RTC</td>
+                    <td id="rtc"></td>
+                </tr>
+                <tr>
+                    <td>AvgeSpeed</td>
+                    <td id="avgspeed"></td>
+                </tr>
+                <tr>
+                    <td>AvgeTemp</td>
+                    <td id="avgtemp"></td>
+                </tr>
+                <tr>
+                    <td>AvgeHum</td>
+                    <td id="avghum"></td>
+                </tr>
+                <tr>
+                    <td>AvgSr</td>
+                    <td id="avgsr"></td>
+                </tr>
+            </tbody>
+        </table>    
+        </div> 
+    <!-- {{ df_html|safe }} -->
+    <!-- <h1 id='id'>id: {{response.id}}</h1>
+    <h1 id='title'>title: {{response.title}}</h1>
+    <h1 id='description'>description: {{response.description}}</h1> 
+    <script>        
+        const myArray = Array.from({ length: 100 }, (_, i) => i);
+        setInterval(function() {
+            id = myArray[Math.floor(Math.random() * myArray.length)];
+              fetch(`https://dummyjson.com/products/${id}`)
+                .then(res => res.json())
+                .then(json => {
+                  document.getElementById('id').textContent = json.id;
+                  document.getElementById('title').textContent = json.title;
+                  document.getElementById('description').textContent = json.description;
+                });
+            }, 2000);
+    </script> -->
+</div>
+<script>
+        function adjustFontSize() {
+            // Get the screen dimensions
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+
+            // Calculate the font size based on both screen width and height
+            const fontSize = (Math.min(screenWidth / 1920, screenHeight / 1600)) * 16;
+
+            // Apply the calculated font size to the element
+            const dynamicText = document.getElementById("main");
+            dynamicText.style.fontSize = fontSize + "px";
+            dynamicText.style.fontWeight = 'bold'
+        }
+
+        // Call the function on page load and when the window is resized
+        window.addEventListener("load", adjustFontSize);
+        window.addEventListener("resize", adjustFontSize);
+        adjustFontSize()
+
+</script>
+<script>    
+    rtc = document.getElementById('rtc')
+    avgspeed = document.getElementById('avgspeed')
+    avgtemp = document.getElementById('avgtemp')
+    avghum = document.getElementById('avghum')
+    avgsr = document.getElementById('avgsr')
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/serial_communication/'
+            + 123
+            + '/'
+        );
+        
+        chatSocket.onopen = function(e){
+            chatSocket.send(JSON.stringify({            
+                client:'consumer'
+            }));
+        }
+        chatSocket.onmessage = function(e) {            
+            data = JSON.parse(e.data)
+            rtc.innerText = data.RTC
+            avgspeed.innerText = data.AvgeSpeed
+            avgtemp.innerText = data.AvgeTemp
+            avghum.innerText = data.AvgeHum
+            avgsr.innerText = data.AvgeSr
+        };
+    
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };      
+</script>
+<script>
+        var currentHeight = 0
+        var currentWidth = 0
+        const resizeDiv = document.getElementById("zoomed-out");
+
+        // Function to handle the resizing action
+        function resizeElement(e) {            
+            e.preventDefault();
+            document.addEventListener("mousemove", resize);
+            document.addEventListener("mouseup", stopResize);
+        }
+
+        function resize(e) {
+            currentHeight = e.clientX - resizeDiv.getBoundingClientRect().left + "px";
+            currentWidth = e.clientY - resizeDiv.getBoundingClientRect().top + "px";
+            resizeDiv.style.width = currentHeight
+            resizeDiv.style.height = currentWidth
+        }
+
+        function stopResize() {
+            document.removeEventListener("mousemove", resize);
+            document.removeEventListener("mouseup", stopResize);
+            console.log(currentHeight,currentWidth)
+        }
+
+        // Event listener to initiate resizing
+        resizeDiv.addEventListener("mousedown", resizeElement);
+    </script>
+</body>
+</html>
