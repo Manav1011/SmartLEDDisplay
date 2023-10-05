@@ -16,11 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import index
+from .views import index,load_rs232
 from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',index,name='index'),
-    path('test/',TemplateView.as_view(template_name='test.html'),name='index')
+    path('test/',TemplateView.as_view(template_name='test.html'),name='index'),
+    path('consumer/',TemplateView.as_view(template_name='consumer.html'),name='consumer'),
+    path('dashboard/',TemplateView.as_view(template_name='dashboard.html'),name='dashboard'),
+    path('rs232/<str:width>/<str:height>',load_rs232,name='rs232')
 ]

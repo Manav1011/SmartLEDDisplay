@@ -10,3 +10,6 @@ def index(request):
     # Convert the DataFrame to HTML using Pandas' to_html method
     df_html = df.to_html(classes='table table-bordered table-striped table-container')    
     return render(request,'index.html',context={'df_html':df_html})
+
+def load_rs232(request, width, height):
+    return render(request,template_name='rs232.html',context={'width':width,'height':height})

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=192, height=160, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+</head>
+<style>   
+ body {
+        font-family:monospace;
+        font-weight:lighter;        ;
+    } 
+    #main{
+        width: 500px;
+        height: 416.66px;
+    }
+     /* Style for the container div */
+     .LED_PANEL{
+            overflow: hidden;
+            background-color: black;        
+            color:white;
+            margin: 0; /* Remove default margins for a clean fit */
+            padding: 0; /* Remove default padding */
+            overflow:hidden;
+            overflow: auto;
+        }
+
+        /* Style to zoom out the content */
+        .zoomed-out-content {
+            transform: scale(1); /* Adjust the scale value as needed */
+            transform-origin: top left;
+            /* height: 100%; */
+            border: 1px solid #ccc;
+            resize: both;
+        }
+
+        /* Add styles for the div's scrollbars (if needed) */
+        .LED_PANEL::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .LED_PANEL::-webkit-scrollbar-thumb {
+            background-color: #888;
+        }
+    p {
+        font-size: 1rem; /* 1rem is equivalent to the base font size (16px) */
+    }
+    
+    h1 {
+        font-size: 10px; /* 2rem is equivalent to twice the base font size (32px) */
+    }
+    .table-container{        
+        width: 100%;
+        height: 100%;
+    }
+    .container-updated{
+        width: 100%;
+    }
+    #loaded_content{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+    }
+</style>
+<body>
+    {% include "navbar.html" %}
+    <div class=".container-updated d-flex justify-content-center">
+        <div class="card text-center text-bg-light mb-3">
+            <div class="card-header">LED PANEL</div>
+            <div class="card-body">
+                <div class="LED_PANEL" id='main'>         
+                            <div class="zoomed-out-content bg-dark text-white" id='zoomed-out'>
+                                <table class="table-dark table-container table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Label</th>
+                                            <th>Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>RTC</td>
+                                            <td id="rtc"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>AvgeSpeed</td>
+                                            <td id="avgspeed"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>AvgeTemp</td>
+                                            <td id="avgtemp"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>AvgeHum</td>
+                                            <td id="avghum"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>AvgSr</td>
+                                            <td id="avgsr"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>    
+                                </div> 
+                            </div>                      
+    </div>
+    </div>
+    <div id="loaded_content"></div>
+<script>
+    var InitialHeight = document.getElementById('main').offsetHeight
+    var InitialWidth = document.getElementById('main').offsetWidth
+        function adjustFontSize() {
+            // Get the screen dimensions
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+
+            // Calculate the font size based on both screen width and height
+            const fontSize = (Math.min(screenWidth / 1920, screenHeight / 1600)) * 16;
+
+            // Apply the calculated font size to the element
+            const dynamicText = document.getElementById("main");
+            dynamicText.style.fontSize = fontSize + "px";
+            dynamicText.style.fontWeight = 'bold'
+        }
+
+        // Call the function on page load and when the window is resized
+        // window.addEventListener("load", adjustFontSize);
+        // window.addEventListener("resize", adjustFontSize);
+        // adjustFontSize()
+
+</script>
+<script>
+    var currentHeight = 0
+    var currentWidth = 0
+    const resizeDiv = document.getElementById("zoomed-out");
+
+    // Function to handle the resizing action
+    function resizeElement(e) {            
+        e.preventDefault();
+        document.addEventListener("mousemove", resize);
+        document.addEventListener("mouseup", stopResize);
+    }
+
+    function resize(e) {
+        currentWidth = e.clientX - resizeDiv.getBoundingClientRect().left + "px";
+        currentHeight = e.clientY - resizeDiv.getBoundingClientRect().top + "px";
+        resizeDiv.style.width = currentWidth
+        resizeDiv.style.height = currentHeight
+    }
+
+    function stopResize() {
+        document.removeEventListener("mousemove", resize);
+        document.removeEventListener("mouseup", stopResize);
+        currentHeight = (parseFloat(currentHeight) * 100) / InitialHeight;
+        currentWidth = (parseFloat(currentWidth) * 100) / InitialWidth
+        chatSocket.send(JSON.stringify({
+            'client':'dashboard',
+            'action':'dimensions_changed',
+            'height':currentHeight,
+            'width':currentWidth
+        }))
+        console.log(currentHeight,currentWidth)
+    }
+    
+    resizeDiv.addEventListener("mousedown", resizeElement);    
+</script>
+<script>
+{/* async function load_rs232(){
+    const templateUrl = `http://192.168.29.18:8000/rs232/${InitialWidth}/${InitialHeight}`;
+// Fetch the template HTML
+fetch(templateUrl)
+  .then(response => {
+    // Check if the response status is OK (200)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch template: ${response.statusText}`);
+    }
+    // Parse the response body as text
+    return response.text();
+  })
+  .then(templateHtml => {
+    // Create a new div element to hold the template content
+    const templateContainer = document.createElement('div');
+    // Set the innerHTML of the container to the fetched template HTML
+    templateContainer.innerHTML = templateHtml;
+    // Append the container to the body of the document
+    document.getElementById('loaded_content').insertAdjacentHTML('beforeend', templateHtml);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+} */}
+</script>
+<script>
+    rtc = document.getElementById('rtc')
+    avgspeed = document.getElementById('avgspeed')
+    avgtemp = document.getElementById('avgtemp')
+    avghum = document.getElementById('avghum')
+    avgsr = document.getElementById('avgsr')
+        var chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/serial_communication/'
+            + 123
+            + '/'
+        );
+        
+        chatSocket.onopen = function(e){
+            chatSocket.send(JSON.stringify({            
+                client:'dashboard'
+            }));
+        }
+        chatSocket.onmessage = function(e) {            
+            data = JSON.parse(e.data)
+            rtc.innerText = data.RTC
+            avgspeed.innerText = data.AvgeSpeed
+            avgtemp.innerText = data.AvgeTemp
+            avghum.innerText = data.AvgeHum
+            avgsr.innerText = data.AvgeSr
+        };
+    
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };  
+</script>
+</body>
+</html>

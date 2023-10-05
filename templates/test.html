@@ -15,31 +15,44 @@
     </style>
 </head>
 <body>
-    <div class="resizable-div" id="resizeDiv">
-        <!-- Content goes here -->
-    </div>
-    <script>
-        const resizeDiv = document.getElementById("resizeDiv");
+    <div id="container">
+        <div id="draggable">Drag me</div>
+      </div>
+<script>
+    const container = document.getElementById('container');
+const draggable = document.getElementById('draggable');
 
-        // Function to handle the resizing action
-        function resizeElement(e) {
-            e.preventDefault();
-            document.addEventListener("mousemove", resize);
-            document.addEventListener("mouseup", stopResize);
-        }
+let offsetX, offsetY;
+let isDragging = false;
 
-        function resize(e) {
-            resizeDiv.style.width = e.clientX - resizeDiv.getBoundingClientRect().left + "px";
-            resizeDiv.style.height = e.clientY - resizeDiv.getBoundingClientRect().top + "px";
-        }
+// Event listener for when the drag starts
+draggable.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  offsetX = e.clientX - draggable.getBoundingClientRect().left;
+  offsetY = e.clientY - draggable.getBoundingClientRect().top;
+  draggable.style.zIndex = '1000'; // Bring the draggable element to the front
+});
 
-        function stopResize() {
-            document.removeEventListener("mousemove", resize);
-            document.removeEventListener("mouseup", stopResize);
-        }
+// Event listener for when the drag ends
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+  draggable.style.zIndex = ''; // Reset the z-index
+});
 
-        // Event listener to initiate resizing
-        resizeDiv.addEventListener("mousedown", resizeElement);
-    </script>
+// Event listener for when the mouse moves
+document.addEventListener('mousemove', (e) => {
+  if (isDragging) {
+    const x = e.clientX - offsetX - container.getBoundingClientRect().left;
+    const y = e.clientY - offsetY - container.getBoundingClientRect().top;
+
+    // Ensure the draggable element stays within the container
+    if (x >= 0 && y >= 0 && x + draggable.clientWidth <= container.clientWidth && y + draggable.clientHeight <= container.clientHeight) {
+      draggable.style.left = x + 'px';
+      draggable.style.top = y + 'px';
+    }
+  }
+});
+
+</script>      
 </body>
 </html>

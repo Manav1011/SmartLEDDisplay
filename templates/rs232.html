@@ -1,0 +1,78 @@
+<style>
+    .zoomed-out-content{
+        width: {{width}}px;
+        height: {{height}}px;
+    }
+</style>
+<div class="card text-center text-bg-light mb-3 m-5">
+        <div class="card-header">RS232</div>
+        <div class="card-body">
+            <div class="zoomed-out-content bg-dark text-white" id='zoomed-out'>
+                <table class="table-dark table-container table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>Label</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>RTC</td>
+                            <td id="rtc"></td>
+                        </tr>
+                        <tr>
+                            <td>AvgeSpeed</td>
+                            <td id="avgspeed"></td>
+                        </tr>
+                        <tr>
+                            <td>AvgeTemp</td>
+                            <td id="avgtemp"></td>
+                        </tr>
+                        <tr>
+                            <td>AvgeHum</td>
+                            <td id="avghum"></td>
+                        </tr>
+                        <tr>
+                            <td>AvgSr</td>
+                            <td id="avgsr"></td>
+                        </tr>
+                    </tbody>
+                </table>    
+                </div> 
+            </div>
+      </div>
+
+<script>
+    async function load_rs232socket(){
+    rtc = document.getElementById('rtc')
+    avgspeed = document.getElementById('avgspeed')
+    avgtemp = document.getElementById('avgtemp')
+    avghum = document.getElementById('avghum')
+    avgsr = document.getElementById('avgsr')
+        var chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/serial_communication/'
+            + 123
+            + '/'
+        );
+        
+        chatSocket.onopen = function(e){
+            chatSocket.send(JSON.stringify({            
+                client:'dashboard'
+            }));
+        }
+        chatSocket.onmessage = function(e) {            
+            // data = JSON.parse(e.data)
+            // rtc.innerText = data.RTC
+            // avgspeed.innerText = data.AvgeSpeed
+            // avgtemp.innerText = data.AvgeTemp
+            // avghum.innerText = data.AvgeHum
+            // avgsr.innerText = data.AvgeSr
+        };
+    
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };    
+    }  
+</script>
